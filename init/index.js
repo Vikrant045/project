@@ -2,9 +2,11 @@ const mongoose = require("mongoose");
 const listing = require("../models/listing.js");
 const initData = require("./data.js");
 
+const Atlas_Url =process.env.ATLAS_URL;
+
 //connect to mongodb database
 async function main(){
-    await mongoose.connect('mongodb://127.0.0.1:27017/airbnb');
+    await mongoose.connect(Atlas_Url);
 }
 main().then(()=>{
     console.log("mongo runs successfully");

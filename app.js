@@ -10,18 +10,19 @@ const methodOverride = require("method-override");
 
 const flash = require("connect-flash");
 const ejsMate = require("ejs-mate");
-const ExpressError = require("./utils/ExpressError.js");
 const Joi = require("joi");
+
+const ExpressError = require("./utils/ExpressError.js");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
+
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
 
 const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 
-
-const passport = require("passport");
-const LocalStrategy = require("passport-local");
 const User = require("./models/user.js");
 
 const Atlas_Url =process.env.ATLAS_URL;
@@ -37,7 +38,7 @@ app.use(methodOverride("_method"));
 
 
 
-//connect to mongodb database
+                                           //connect to mongodb database
 async function main(){
     await mongoose.connect(Atlas_Url);
 }
@@ -47,17 +48,19 @@ main().then(()=>{
     console.log(er);
 });
 
-const store = MongoStore.create({
+const store = MongoStore.create({  //mongostore for mongoAtlas
   mongoUrl: Atlas_Url,
   crypto:{
 secret:process.env.SECRET,
   },
   touchAfter:24*3600,
 });
+
 store.on("error",()=>{
   console.log("error in MONGO SESSION",err);
 });
- const sessionOptions = {
+
+ const sessionOptions = {    //session
   store,
   secret:process.env.SECRET,
   resave: false,
@@ -69,14 +72,12 @@ store.on("error",()=>{
   },
 };
 
-// app.get("/",(req,res)=>{
-//   res.send("runs❤");
-// });
 
-app.use(session(sessionOptions));
-app.use(flash()); // initialize flash
 
-//authentication
+app.use(session(sessionOptions));  //init session
+app.use(flash());                 // initialize flash
+
+                                   // Password authentication
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
