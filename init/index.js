@@ -6,7 +6,7 @@ const Atlas_Url =process.env.ATLAS_URL;
 
 //connect to mongodb database
 async function main(){
-    await mongoose.connect(Atlas_Url);
+    await mongoose.connect('mongodb://127.0.0.1:27017/airbnb');
 }
 main().then(()=>{
     console.log("mongo runs successfully");
